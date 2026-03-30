@@ -19,14 +19,16 @@
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --border: rgba(255, 255, 255, 0.05);
+            --table-row-bg: rgba(255, 255, 255, 0.05);
         }
 
         .light {
-            --bg-color: #f1f5f9;
-            --card-bg: rgba(255, 255, 255, 0.8);
+            --bg-color: #f8fafc;
+            --card-bg: rgba(255, 255, 255, 0.95);
             --text-main: #0f172a;
-            --text-muted: #64748b;
-            --border: rgba(0, 0, 0, 0.05);
+            --text-muted: #475569;
+            --border: rgba(15, 23, 42, 0.1);
+            --table-row-bg: #ffffff;
         }
 
         body {
@@ -63,6 +65,19 @@
             z-index: 10;
             background: var(--card-bg);
             backdrop-filter: blur(10px);
+            border-bottom: 2px solid var(--accent);
+        }
+
+        /* Amélioration visuelle pour le tableau en mode clair */
+        .light .calendar-row {
+            background-color: #ffffff;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            color: #1e293b;
+        }
+        
+        .light .calendar-header th {
+            color: #0f172a;
+            background-color: #f1f5f9;
         }
     </style>
 </head>
@@ -150,7 +165,7 @@
                     <label class="text-xs font-bold text-slate-500 uppercase mb-3 block tracking-widest">Ville (Recherche)</label>
                     <div class="flex gap-2">
                         <input type="text" id="city-input" placeholder="Ex: Paris, FR" class="flex-1 bg-slate-500/10 border border-white/10 rounded-xl px-4 py-2 outline-none focus:border-sky-500 transition-colors">
-                        <button onclick="manualSearch()" class="bg-sky-500 px-4 py-2 rounded-xl font-bold">OK</button>
+                        <button onclick="manualSearch()" class="bg-sky-500 px-4 py-2 rounded-xl font-bold text-white">OK</button>
                     </div>
                 </div>
 
@@ -180,7 +195,7 @@
                     </div>
                 </div>
             </div>
-            <button onclick="saveSettings()" class="w-full mt-8 bg-sky-500 py-3 rounded-2xl font-bold">Enregistrer</button>
+            <button onclick="saveSettings()" class="w-full mt-8 bg-sky-500 py-3 rounded-2xl font-bold text-white">Enregistrer</button>
         </div>
     </div>
 
@@ -189,7 +204,7 @@
         <div class="glass w-full max-w-4xl max-h-[85vh] overflow-hidden rounded-[2rem] flex flex-col">
             <div class="p-6 border-b border-white/5 flex justify-between items-center bg-sky-500/5">
                 <h2 class="text-xl font-bold">Horaires du Mois (Ajustés)</h2>
-                <button onclick="closeModal('calendar')" class="text-slate-500 hover:text-white"><i class="fas fa-times"></i></button>
+                <button onclick="closeModal('calendar')" class="text-slate-500 hover:text-red-500 transition-colors"><i class="fas fa-times text-xl"></i></button>
             </div>
             <div class="overflow-auto p-4 bg-white/5" id="calendar-body">
                 <p class="text-center p-10 text-slate-500">Chargement...</p>
@@ -238,9 +253,13 @@
             const html = document.documentElement;
             const icon = document.getElementById('theme-icon');
             if (state.theme === 'dark') {
-                html.classList.add('dark'); icon.className = 'fas fa-sun text-yellow-400';
+                html.classList.remove('light');
+                html.classList.add('dark'); 
+                icon.className = 'fas fa-sun text-yellow-400';
             } else {
-                html.classList.remove('dark'); icon.className = 'fas fa-moon text-sky-600';
+                html.classList.remove('dark');
+                html.classList.add('light'); 
+                icon.className = 'fas fa-moon text-sky-600';
             }
         }
 
@@ -278,6 +297,7 @@
 
         function updateUI() {
             const data = state.dates;
+            if (!data) return;
             document.getElementById('gregorian-date').innerText = data.readable;
             document.getElementById('hijri-date').innerText = `${data.hijri.day} ${data.hijri.month.ar} ${data.hijri.year}`;
             document.getElementById('location-text').innerText = state.city || `${state.lat.toFixed(2)}, ${state.lon.toFixed(2)}`;
@@ -305,6 +325,7 @@
         }
 
         function updateCalculations() {
+            if (!state.timings) return;
             const now = new Date();
             const nowSec = (now.getHours() * 3600) + (now.getMinutes() * 60) + now.getSeconds();
             
@@ -324,8 +345,10 @@
 
             PRAYER_KEYS.forEach(k => {
                 const el = document.getElementById(`card-${k}`);
-                if (k === current) el.classList.add('active-card');
-                else el.classList.remove('active-card');
+                if (el) {
+                    if (k === current) el.classList.add('active-card');
+                    else el.classList.remove('active-card');
+                }
             });
 
             document.getElementById('next-prayer-name').innerText = PRAYER_INFO[nextKey].fr;
@@ -384,7 +407,8 @@
         function fillSettingsInputs() {
             ["fajr", "dhuhr", "asr", "maghrib", "isha"].forEach(k => {
                 const key = k.charAt(0).toUpperCase() + k.slice(1);
-                document.getElementById(`adj-${k}`).value = state.adjustments[key] || 0;
+                const el = document.getElementById(`adj-${k}`);
+                if (el) el.value = state.adjustments[key] || 0;
             });
         }
 
@@ -405,15 +429,15 @@
                 let html = `<table class="w-full text-left text-sm border-separate border-spacing-y-2">
                     <thead class="calendar-header">
                         <tr class="text-slate-500 uppercase text-[10px] font-bold">
-                            <th class="px-4 py-4">Jour</th>
-                            ${PRAYER_KEYS.map(k => `<th class="px-4 py-4">${PRAYER_INFO[k].fr}</th>`).join('')}
+                            <th class="px-4 py-4 rounded-tl-xl">Jour</th>
+                            ${PRAYER_KEYS.map((k, i) => `<th class="px-4 py-4 ${i === PRAYER_KEYS.length - 1 ? 'rounded-tr-xl' : ''}">${PRAYER_INFO[k].fr}</th>`).join('')}
                         </tr>
                     </thead>
-                    <tbody>`;
+                    <tbody class="pt-2">`;
                 
                 data.data.forEach(day => {
                     const isToday = day.date.gregorian.day == date.getDate();
-                    html += `<tr class="${isToday ? 'bg-sky-500/20 shadow-lg' : 'bg-white/5'} rounded-xl overflow-hidden">
+                    html += `<tr class="calendar-row ${isToday ? 'bg-sky-500/20 shadow-lg' : 'bg-white/5'} rounded-xl overflow-hidden transition-colors">
                         <td class="px-4 py-3 font-bold border-l-4 ${isToday ? 'border-sky-500' : 'border-transparent'}">${day.date.gregorian.day}</td>
                         ${PRAYER_KEYS.map(k => {
                             const rawTime = cleanTime(day.timings[k]);
