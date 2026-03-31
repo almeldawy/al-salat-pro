@@ -68,17 +68,36 @@
             border-bottom: 2px solid var(--accent);
         }
 
-        /* Amélioration visuelle pour le tableau en mode clair */
-        .light .calendar-row {
-            background-color: #ffffff;
-            border: 1px solid rgba(0, 0, 0, 0.05);
-            color: #1e293b;
-        }
-        
-        .light .calendar-header th {
-            color: #0f172a;
+        /* AMÉLIORATION CLARTÉ MODE CLAIR - CALENDRIER */
+        .light .calendar-header {
             background-color: #f1f5f9;
         }
+
+        .light .calendar-header th {
+            color: #0f172a;
+            font-weight: 800;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .light .calendar-row {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            color: #334155;
+        }
+
+        .light .calendar-row:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        .light .calendar-row td {
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .light .calendar-row.bg-sky-500\/20 {
+            background-color: #e0f2fe !important;
+            color: #0369a1;
+        }
+        /* FIN AMÉLIORATION */
     </style>
 </head>
 <body class="min-h-screen">
@@ -465,3 +484,4 @@
     </script>
 </body>
 </html>
+
