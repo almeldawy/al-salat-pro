@@ -329,7 +329,9 @@
             const data = state.dates;
             if (!data) return;
             document.getElementById('gregorian-date').innerText = data.readable;
+            // Nouvelle logique (Ordre : Jour / Mois / Année) :
             document.getElementById('hijri-date').innerText = `${data.hijri.day} ${data.hijri.month.ar} ${data.hijri.year}`;
+            // Résultat : 14 Ramadan 1447
             document.getElementById('location-text').innerText = state.city || `${state.lat.toFixed(2)}, ${state.lon.toFixed(2)}`;
 
             const grid = document.getElementById('prayer-grid');
