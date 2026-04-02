@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr" class="dark">
 <head>
@@ -132,7 +133,13 @@
                 <div id="live-clock" class="text-6xl md:text-7xl font-black tracking-tighter mb-2">00:00:00</div>
                 <div class="flex flex-wrap items-center gap-4">
                     <div id="gregorian-date" class="bg-sky-500/10 text-sky-500 px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-widest">-- --- ----</div>
-                    <div id="hijri-date" class="arabic-text text-2xl text-slate-400">-- ---- ----</div>
+                    <!-- Ici, on crée trois sous-éléments (spans) pour forcer l'ordre : Jour, puis Mois, puis Année -->
+
+<div id="hijri-date" class="text-2xl text-slate-400 flex gap-2 items-center">
+<span id="h-day">--</span>
+<span id="h-month" class="arabic-text">----</span>
+<span id="h-year">----</span>
+</div>
                 </div>
                 <div class="mt-6 flex items-center gap-2 text-sm text-slate-500 bg-slate-500/5 px-4 py-2 rounded-full border border-white/5">
                     <i class="fas fa-map-marker-alt text-red-500"></i>
@@ -259,11 +266,11 @@
         const PRAYER_KEYS = ["Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"];
         const PRAYER_INFO = {
             Fajr: { fr: "Fajr", ar: "الفجر", icon: "fa-cloud-moon" },
-            Sunrise: { fr: "Chourouk", ar: "الشروق", icon: "fa-mountain-sun" },
-            Dhuhr: { fr: "Dhuhr", ar: "الظهر", icon: "fa-sun" },
-            Asr: { fr: "Asr", ar: "العصر", icon: "fa-cloud-sun" },
-            Maghrib: { fr: "Maghrib", ar: "المغرب", icon: "fa-moon" },
-            Isha: { fr: "Isha", ar: "العشاء", icon: "fa-star-and-crescent" }
+            Sunrise: { fr: "Chourouk", ar: "الشروق", icon: "fa-mountain-sun" },
+            Dhuhr: { fr: "Dhuhr", ar: "الظهر", icon: "fa-sun" },
+            Asr: { fr: "Asr", ar: "العصر", icon: "fa-cloud-sun" },
+            Maghrib: { fr: "Maghrib", ar: "المغرب", icon: "fa-moon" },
+            Isha: { fr: "Isha", ar: "العشاء", icon: "fa-star-and-crescent" }
         };
 
         window.onload = () => {
@@ -330,7 +337,9 @@
             if (!data) return;
             document.getElementById('gregorian-date').innerText = data.readable;
             // Nouvelle logique (Ordre : Jour / Mois / Année) :
-            document.getElementById('hijri-date').innerText = `${data.hijri.day} ${data.hijri.month.ar} ${data.hijri.year}`;
+            document.getElementById('h-day').innerText = data.hijri.day;      // Le chiffre du jour (ex: 14)
+document.getElementById('h-month').innerText = data.hijri.month.ar; // Le nom du mois en arabe (ex: Shawwal)
+document.getElementById('h-year').innerText = data.hijri.year;
             // Résultat : 14 Ramadan 1447
             document.getElementById('location-text').innerText = state.city || `${state.lat.toFixed(2)}, ${state.lon.toFixed(2)}`;
 
@@ -497,4 +506,3 @@
     </script>
 </body>
 </html>
-
