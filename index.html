@@ -335,7 +335,14 @@
         function updateUI() {
             const data = state.dates;
             if (!data) return;
-            document.getElementById('gregorian-date').innerText = data.readable;
+            // On crée un objet Date à partir du format de l'API (JJ MMM AAAA)
+const gregDate = new Date(data.timestamp * 1000); 
+// On affiche la date au format français (ex: 02 avr. 2026)
+document.getElementById('gregorian-date').innerText = gregDate.toLocaleDateString('fr-FR', { 
+    day: '2-digit', 
+    month: 'short', 
+    year: 'numeric' 
+}).replace('.', ''); // On retire le point après l'abréviation du mois si présent
             // Nouvelle logique (Ordre : Jour / Mois / Année) :
             document.getElementById('h-day').innerText = data.hijri.day;      // Le chiffre du jour (ex: 14)
 document.getElementById('h-month').innerText = data.hijri.month.ar; // Le nom du mois en arabe (ex: Shawwal)
